@@ -27,6 +27,19 @@
     return keyWindow.rootViewController;
 }
 
+- (void)sendEvent:(UIEvent *)event {
+    [super sendEvent:event];
+
+    switch (event.type) {
+        case UIEventTypeTouches:
+            [self updateWithTouches:event.allTouches];
+            break;
+        case UIEventTypeMotion:
+        case UIEventTypeRemoteControl:
+            break;
+    }
+}
+
 - (void)updateWithTouches:(NSSet *)touches {
     return [self updateWithTouches:touches animated:YES];
 }
