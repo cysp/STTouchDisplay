@@ -41,9 +41,6 @@
 }
 
 - (void)updateWithTouches:(NSSet *)touches {
-    return [self updateWithTouches:touches animated:YES];
-}
-- (void)updateWithTouches:(NSSet *)touches animated:(BOOL)animated {
     NSMutableSet * const existingTouches = self.st_knownTouches.mutableCopy;
 
     for (UITouch *touch in touches) {
@@ -62,21 +59,16 @@
         } else {
             UIImageView * const view = [[UIImageView alloc] initWithFrame:(CGRect){ .size = { .width = 38, .height = 38 } }];
             view.image = STTouchDisplayImage;
-            [self st_setView:view forTouch:touch animated:animated];
+            [self st_setView:view forTouch:touch];
         }
     }
 
     for (UITouch *touch in existingTouches) {
-        [self st_setView:nil forTouch:touch animated:animated];
+        [self st_setView:nil forTouch:touch];
     }
 
     [self setNeedsLayout];
-    if (animated) {
-        UIViewAnimationOptions const animationOptions = UIViewAnimationOptionAllowUserInteraction;//|UIViewAnimationOptionBeginFromCurrentState;
-        [UIView animateWithDuration:1./4. delay:0 options:animationOptions|UIViewAnimationOptionCurveEaseInOut animations:^{
-            [self layoutIfNeeded];
-        } completion:nil];
-    }
+    [self layoutIfNeeded];
 }
 
 - (NSSet *)st_knownTouches {
@@ -88,47 +80,17 @@
     return knownTouches.copy;
 }
 
-- (void)st_setView:(UIView *)view forTouch:(UITouch *)touch animated:(BOOL)animated {
+- (void)st_setView:(UIView *)view forTouch:(UITouch *)touch {
     NSMapTable * const touchViews = _touchViews;
 
-    UIViewAnimationOptions const animationOptions = UIViewAnimationOptionAllowUserInteraction;//|UIViewAnimationOptionBeginFromCurrentState;
-
     if (view) {
-        view.alpha = 0;
         view.center = [touch locationInView:self];
         [touchViews setObject:view forKey:touch];
-
-        void (^animations)(void) = ^{
-            if (view) {
-                view.alpha = 1;
-                [self addSubview:view];
-            }
-        };
-        if (animated) {
-            [UIView animateWithDuration:1./8. delay:0 options:animationOptions|UIViewAnimationOptionCurveEaseOut animations:^{
-                animations();
-            } completion:nil];
-        } else {
-            animations();
-        }
+        [self addSubview:view];
     } else {
         UIView * const existingView = [touchViews objectForKey:touch];
         [touchViews removeObjectForKey:touch];
-
-        void (^animations)(void) = ^{
-            existingView.alpha = 0;
-        };
-        void (^completion)(BOOL) = ^(BOOL finished) {
-            [existingView removeFromSuperview];
-        };
-        if (animated) {
-            [UIView animateWithDuration:1./4. delay:0 options:animationOptions|UIViewAnimationOptionCurveEaseIn animations:^{
-                animations();
-            } completion:completion];
-        } else {
-            animations();
-            completion(YES);
-        }
+        [existingView removeFromSuperview];
     }
 }
 
