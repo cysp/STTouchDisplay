@@ -90,7 +90,12 @@
     } else {
         UIView * const existingView = [touchViews objectForKey:touch];
         [touchViews removeObjectForKey:touch];
-        [existingView removeFromSuperview];
+        [UIView animateWithDuration:.25 delay:0 options:UIViewAnimationOptionAllowUserInteraction|UIViewAnimationOptionCurveEaseIn animations:^{
+            existingView.alpha = 0;
+            existingView.transform = CGAffineTransformMakeScale(2, 2);
+        } completion:^(BOOL finished) {
+            [existingView removeFromSuperview];
+        }];
     }
 }
 
