@@ -4,5 +4,5 @@
 
 
 @interface STTouchDisplayWindow : UIWindow
-- (void)updateWithTouches:(NSSet *)touches;
+- (void)updateWithEvent:(UIEvent *)event;
 @end
