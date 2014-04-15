@@ -39,69 +39,70 @@ static STIOHIDEventRef STIOHIDEventForUIEvent(UIEvent *event) {
     return NULL;
 }
 
-static struct STIOHIDDigitizerQualityEventData const *STIOHIDDigitizerQualityEventDataForUIEventAndTouch(UIEvent *event, UITouch *touch) {
+static STIOHIDEventRef STIOHIDDigitizerQualityEventForUIEventAndTouch(UIEvent *event, UITouch *touch) {
     STIOHIDEventRef const her = STIOHIDEventForUIEvent(event);
     if (!her) {
         return NULL;
     }
-    NSData * const herd = (__bridge NSData *)(STIOHIDEventCreateData(NULL, her));
-    void * const herdBytes = (void *)herd.bytes;
-    size_t const herdLength = herd.length;
+
+    struct STIOHIDDigitizerEvent *heb = (struct STIOHIDDigitizerEvent *)her;
+    if (heb->base.base.type != STIOHIDEventTypeDigitizer) {
+        return NULL;
+    }
 
     NSUInteger const pathIndex = ((id<STUITouch>)touch)._pathIndex;
     NSUInteger const pathIdentity = ((id<STUITouch>)touch)._pathIdentity;
 
-    struct STIOHIDSystemQueueEventData const * const ed = (struct STIOHIDSystemQueueEventData const *)herdBytes;
-    if (!ed) {
+    CFArrayRef const children = heb->base.base.base.children;
+    if (!children) {
         return NULL;
     }
-    void *cursor = (void *)ed + sizeof(*ed) + ed->attributeDataLength;
-    for (NSUInteger i = 0; i < ed->eventCount; ++i) {
-        if (cursor >= herdBytes + herdLength) {
-            return NULL;
+    CFIndex const nChildren = CFArrayGetCount(children);
+    for (CFIndex i = 0; i < nChildren; ++i) {
+        STIOHIDEventRef const child = CFArrayGetValueAtIndex(children, i);
+        struct STIOHIDDigitizerQualityEvent const * const cdqe = (struct STIOHIDDigitizerQualityEvent *)child;
+        if (cdqe->base.base.base.type != STIOHIDEventTypeDigitizer) {
+            continue;
         }
-        struct STIOHIDEventData const * const he = (struct STIOHIDEventData *)cursor;
-        if (he->type == STIOHIDEventTypeDigitizer) {
-            struct STIOHIDDigitizerEventData const * const hed = (struct STIOHIDDigitizerEventData *)he;
-            do {
-                if (hed->identity != pathIdentity) {
-                    break;
-                }
-                if (hed->transducerIndex != pathIndex) {
-                    break;
-                }
-                if (hed->orientationType == STIOHIDDigitizerOrientationTypeQuality) {
-                    return (struct STIOHIDDigitizerQualityEventData *)hed;
-                }
-            } while (0);
+        if (cdqe->base.orientationType != STIOHIDDigitizerOrientationTypeQuality) {
+            continue;
         }
-        cursor += he->length;
+        if (cdqe->base.identity != pathIdentity) {
+            continue;
+        }
+        if (cdqe->base.transducerIndex != pathIndex) {
+            continue;
+        }
+        return child;
     }
-    (void)herd;
+
     return NULL;
 }
 
 
 static CGFloat const STTouchPathMajorRadius(UIEvent *event, UITouch *touch) {
-    struct STIOHIDDigitizerQualityEventData const * const dqed = STIOHIDDigitizerQualityEventDataForUIEventAndTouch(event, touch);
-    if (dqed) {
-        return STIOFixedToDouble(dqed->orientation.majorRadius);
+    STIOHIDEventRef const dqer = STIOHIDDigitizerQualityEventForUIEventAndTouch(event, touch);
+    if (dqer) {
+        struct STIOHIDDigitizerQualityEvent const * const dqe = (struct STIOHIDDigitizerQualityEvent *)dqer;
+        return STIOFixedToDouble(dqe->orientation.majorRadius);
     }
     return STTouchPathMajorRadiusDefault;
 }
 
 static CGFloat const STTouchPathMinorRadius(UIEvent *event, UITouch *touch) {
-    struct STIOHIDDigitizerQualityEventData const * const dqed = STIOHIDDigitizerQualityEventDataForUIEventAndTouch(event, touch);
-    if (dqed) {
-        return STIOFixedToDouble(dqed->orientation.minorRadius);
+    STIOHIDEventRef const dqer = STIOHIDDigitizerQualityEventForUIEventAndTouch(event, touch);
+    if (dqer) {
+        struct STIOHIDDigitizerQualityEvent const * const dqe = (struct STIOHIDDigitizerQualityEvent *)dqer;
+        return STIOFixedToDouble(dqe->orientation.minorRadius);
     }
     return STTouchPathMinorRadiusDefault;
 }
 
 static CGFloat const STTouchTwist(UIEvent *event, UITouch *touch) {
-    struct STIOHIDDigitizerQualityEventData const * const dqed = STIOHIDDigitizerQualityEventDataForUIEventAndTouch(event, touch);
-    if (dqed) {
-        return STIOFixedToDouble(dqed->base.twist);
+    STIOHIDEventRef const dqer = STIOHIDDigitizerQualityEventForUIEventAndTouch(event, touch);
+    if (dqer) {
+        struct STIOHIDDigitizerQualityEvent const * const dqe = (struct STIOHIDDigitizerQualityEvent *)dqer;
+        return STIOFixedToDouble(dqe->base.twist);
     }
     return STTouchTwistDefault;
 }
