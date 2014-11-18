@@ -3,6 +3,6 @@
 #import <UIKit/UIKit.h>
 
 
-@interface STTouchDisplayWindow : UIWindow
+@interface STTouchDisplayView : UIView
 - (void)updateWithEvent:(UIEvent *)event;
 @end

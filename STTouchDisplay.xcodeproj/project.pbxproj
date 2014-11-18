@@ -9,7 +9,7 @@
 /* Begin PBXBuildFile section */
 		2C24425C18E0244A00A926A0 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C24425B18E0244A00A926A0 /* Foundation.framework */; };
 		2C24426118E0244A00A926A0 /* STTouchDisplay.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 2C24426018E0244A00A926A0 /* STTouchDisplay.h */; };
-		2C24428318E0272500A926A0 /* STTouchDisplayWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C24428218E0272500A926A0 /* STTouchDisplayWindow.m */; };
+		2C24428318E0272500A926A0 /* STTouchDisplayView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C24428218E0272500A926A0 /* STTouchDisplayView.m */; };
 		2CEC9E7018E17CBB00E7BE44 /* STTouchDisplayImage.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CEC9E6F18E17CBB00E7BE44 /* STTouchDisplayImage.m */; };
 /* End PBXBuildFile section */
 
@@ -30,8 +30,8 @@
 		2C24425818E0244A00A926A0 /* libSTTouchDisplay.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libSTTouchDisplay.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		2C24425B18E0244A00A926A0 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		2C24426018E0244A00A926A0 /* STTouchDisplay.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = STTouchDisplay.h; sourceTree = "<group>"; };
-		2C24428118E0272500A926A0 /* STTouchDisplayWindow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = STTouchDisplayWindow.h; sourceTree = "<group>"; };
-		2C24428218E0272500A926A0 /* STTouchDisplayWindow.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = STTouchDisplayWindow.m; sourceTree = "<group>"; };
+		2C24428118E0272500A926A0 /* STTouchDisplayView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = STTouchDisplayView.h; sourceTree = "<group>"; };
+		2C24428218E0272500A926A0 /* STTouchDisplayView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = STTouchDisplayView.m; sourceTree = "<group>"; };
 		2CEC9E6E18E17CBB00E7BE44 /* STTouchDisplayImage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = STTouchDisplayImage.h; sourceTree = "<group>"; };
 		2CEC9E6F18E17CBB00E7BE44 /* STTouchDisplayImage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = STTouchDisplayImage.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -79,8 +79,8 @@
 				2C24426018E0244A00A926A0 /* STTouchDisplay.h */,
 				2CEC9E6E18E17CBB00E7BE44 /* STTouchDisplayImage.h */,
 				2CEC9E6F18E17CBB00E7BE44 /* STTouchDisplayImage.m */,
-				2C24428118E0272500A926A0 /* STTouchDisplayWindow.h */,
-				2C24428218E0272500A926A0 /* STTouchDisplayWindow.m */,
+				2C24428118E0272500A926A0 /* STTouchDisplayView.h */,
+				2C24428218E0272500A926A0 /* STTouchDisplayView.m */,
 			);
 			path = STTouchDisplay;
 			sourceTree = "<group>";
@@ -136,7 +136,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2C24428318E0272500A926A0 /* STTouchDisplayWindow.m in Sources */,
+				2C24428318E0272500A926A0 /* STTouchDisplayView.m in Sources */,
 				2CEC9E7018E17CBB00E7BE44 /* STTouchDisplayImage.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

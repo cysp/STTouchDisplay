@@ -1,6 +1,6 @@
 //  Copyright (c) 2014 Scott Talbot. All rights reserved.
 
-#import "STTouchDisplayWindow.h"
+#import "STTouchDisplayView.h"
 #import "STTouchDisplayImage.h"
 
 
@@ -128,47 +128,24 @@ static CGAffineTransform STTouchViewTransformForRadiiAndTwist(CGFloat pathMajorR
     CGFloat const scaleX = (pathMajorRadius ?: 5) / 5.;
     CGFloat const scaleY = (pathMinorRadius ?: 5) / 5.;
     CGFloat const twistInRadians = M_PI_2 - twist * M_PI / 180.;
-    NSLog(@"tir: %g", twistInRadians);
     CGAffineTransform transform = CGAffineTransformMakeRotation(twistInRadians);
     transform = CGAffineTransformScale(transform, scaleX, scaleY);
     return transform;
 }
 
 
-@implementation STTouchDisplayWindow {
+@implementation STTouchDisplayView {
 @private
     NSMapTable *_touchViews;
 }
 
 - (id)initWithFrame:(CGRect)frame {
     if ((self = [super initWithFrame:frame])) {
-        self.windowLevel = (UIWindowLevelNormal + UIWindowLevelAlert) / 2.f;
         self.userInteractionEnabled = NO;
-        self.hidden = NO;
 
         _touchViews = [[NSMapTable alloc] initWithKeyOptions:NSPointerFunctionsStrongMemory valueOptions:NSPointerFunctionsStrongMemory capacity:0];
     }
     return self;
-}
-
-// this dirty hack is to work around this window, being uppermost, taking control of the status bar style
-- (UIViewController *)rootViewController {
-    UIApplication * const application = [UIApplication sharedApplication];
-    UIWindow * const keyWindow = application.keyWindow;
-    return keyWindow.rootViewController;
-}
-
-- (void)sendEvent:(UIEvent *)event {
-    [super sendEvent:event];
-
-    switch (event.type) {
-        case UIEventTypeTouches:
-            [self updateWithEvent:event];
-            break;
-        case UIEventTypeMotion:
-        case UIEventTypeRemoteControl:
-            break;
-    }
 }
 
 - (void)updateWithEvent:(UIEvent *)event {

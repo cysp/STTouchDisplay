@@ -2,4 +2,4 @@
 
 #import <Foundation/Foundation.h>
 
-#import <STTouchDisplay/STTouchDisplayWindow.h>
+#import <STTouchDisplay/STTouchDisplayView.h>
