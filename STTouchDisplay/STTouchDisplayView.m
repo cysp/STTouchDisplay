@@ -29,6 +29,7 @@ static STIOHIDEventRef STIOHIDEventForUIEvent(UIEvent *event) {
             break;
         case UIEventTypeMotion:
         case UIEventTypeRemoteControl:
+        case UIEventTypePresses:
             return NULL;
     }
 
@@ -154,6 +155,7 @@ static CGAffineTransform STTouchViewTransformForRadiiAndTwist(CGFloat pathMajorR
             break;
         case UIEventTypeMotion:
         case UIEventTypeRemoteControl:
+        case UIEventTypePresses:
             return;
     }
 
