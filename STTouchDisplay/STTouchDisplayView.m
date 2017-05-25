@@ -137,7 +137,7 @@ static CGAffineTransform STTouchViewTransformForRadiiAndTwist(CGFloat pathMajorR
 
 @implementation STTouchDisplayView {
 @private
-    NSMapTable *_touchViews;
+    NSMapTable<UITouch *, UIView *> *_touchViews;
 }
 
 - (id)initWithFrame:(CGRect)frame {
@@ -159,7 +159,7 @@ static CGAffineTransform STTouchViewTransformForRadiiAndTwist(CGFloat pathMajorR
             return;
     }
 
-    NSMutableSet * const existingTouches = self.st_knownTouches.mutableCopy;
+    NSMutableSet<UITouch *> * const existingTouches = self.st_knownTouches.mutableCopy;
 
     for (UITouch *touch in event.allTouches) {
         if (!touch.window) {
@@ -202,9 +202,9 @@ static CGAffineTransform STTouchViewTransformForRadiiAndTwist(CGFloat pathMajorR
     [self layoutIfNeeded];
 }
 
-- (NSSet *)st_knownTouches {
+- (NSSet<UITouch *> *)st_knownTouches {
     NSMutableSet * const knownTouches = [[NSMutableSet alloc] init];
-    NSMapTable * const touchViews = _touchViews;
+    NSMapTable<UITouch *, UIView *> * const touchViews = _touchViews;
     for (UITouch *touch in touchViews) {
         [knownTouches addObject:touch];
     }
@@ -212,13 +212,13 @@ static CGAffineTransform STTouchViewTransformForRadiiAndTwist(CGFloat pathMajorR
 }
 
 - (UIView *)st_viewForTouch:(UITouch *)touch {
-    NSMapTable * const touchViews = _touchViews;
+    NSMapTable<UITouch *, UIView *> * const touchViews = _touchViews;
     UIView * const view = [touchViews objectForKey:touch];
     return view;
 }
 
 - (void)st_setView:(UIView *)view forTouch:(UITouch *)touch {
-    NSMapTable * const touchViews = _touchViews;
+    NSMapTable<UITouch *, UIView *> * const touchViews = _touchViews;
 
     if (view) {
         view.center = [touch locationInView:self];
