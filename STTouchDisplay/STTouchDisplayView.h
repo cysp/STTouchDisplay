@@ -4,5 +4,5 @@
 
 
 @interface STTouchDisplayView : UIView
-- (void)updateWithEvent:(UIEvent *)event;
+- (void)updateWithEvent:(UIEvent * __nonnull)event;
 @end
