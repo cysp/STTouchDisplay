@@ -139,4 +139,31 @@
     XCTAssertEqual(display.subviews.count, 0U);
 }
 
+- (void)testWindowMoveRemovesFadingMarker {
+    UIWindow *firstWindow = [[UIWindow alloc] initWithFrame:CGRectMake(0, 0, 100, 100)];
+    UIWindow *secondWindow = [[UIWindow alloc] initWithFrame:CGRectMake(0, 0, 100, 100)];
+    STTouchDisplayView *display = [[STTouchDisplayView alloc] initWithFrame:firstWindow.bounds];
+    [firstWindow addSubview:display];
+    UIView *callerView = [[UIView alloc] initWithFrame:CGRectZero];
+    [display addSubview:callerView];
+
+    STFakeTouch *touch = [[STFakeTouch alloc] init];
+    touch.window = firstWindow;
+    touch.phase = UITouchPhaseBegan;
+    touch.location = CGPointMake(20, 30);
+    STFakeEvent *event = [[STFakeEvent alloc] init];
+    event.type = UIEventTypeTouches;
+    event.allTouches = [NSSet setWithObject:(UITouch *)touch];
+    [display updateWithEvent:(UIEvent *)event];
+    XCTAssertEqual(display.subviews.count, 2U);
+
+    touch.phase = UITouchPhaseEnded;
+    [display updateWithEvent:(UIEvent *)event];
+    XCTAssertEqual(display.subviews.count, 2U);
+
+    [secondWindow addSubview:display];
+    XCTAssertEqual(display.subviews.count, 1U);
+    XCTAssertIdentical(display.subviews.firstObject, callerView);
+}
+
 @end

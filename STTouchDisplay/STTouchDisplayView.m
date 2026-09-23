@@ -131,6 +131,7 @@ static CGAffineTransform STTouchViewTransformForRadiiAndTwist(CGFloat pathMajorR
 @implementation STTouchDisplayView {
   @private
     NSMapTable<UITouch *, UIView *> *_touchViews;
+    NSMutableSet<UIView *> *_fadingTouchViews;
 }
 
 - (id)initWithFrame:(CGRect)frame {
@@ -152,6 +153,7 @@ static CGAffineTransform STTouchViewTransformForRadiiAndTwist(CGFloat pathMajorR
     _touchViews = [[NSMapTable alloc] initWithKeyOptions:NSPointerFunctionsStrongMemory
                                             valueOptions:NSPointerFunctionsStrongMemory
                                                 capacity:0];
+    _fadingTouchViews = [[NSMutableSet alloc] init];
 }
 
 - (void)didMoveToWindow {
@@ -160,7 +162,11 @@ static CGAffineTransform STTouchViewTransformForRadiiAndTwist(CGFloat pathMajorR
     for (UIView *view in _touchViews.objectEnumerator) {
         [view removeFromSuperview];
     }
+    for (UIView *view in _fadingTouchViews) {
+        [view removeFromSuperview];
+    }
     [_touchViews removeAllObjects];
+    [_fadingTouchViews removeAllObjects];
 }
 
 - (void)updateWithEvent:(UIEvent *)event {
@@ -237,6 +243,7 @@ static CGAffineTransform STTouchViewTransformForRadiiAndTwist(CGFloat pathMajorR
         UIView *const existingView = [touchViews objectForKey:touch];
         CGAffineTransform const existingTransform = existingView.transform;
         [touchViews removeObjectForKey:touch];
+        [_fadingTouchViews addObject:existingView];
         [UIView animateWithDuration:.25
             delay:0
             options:UIViewAnimationOptionAllowUserInteraction | UIViewAnimationOptionCurveEaseIn
@@ -246,6 +253,7 @@ static CGAffineTransform STTouchViewTransformForRadiiAndTwist(CGFloat pathMajorR
             }
             completion:^(BOOL finished) {
               [existingView removeFromSuperview];
+              [self->_fadingTouchViews removeObject:existingView];
             }];
     }
 }
