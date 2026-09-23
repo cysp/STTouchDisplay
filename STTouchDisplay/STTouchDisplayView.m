@@ -134,33 +134,47 @@ static CGAffineTransform STTouchViewTransformForRadiiAndTwist(CGFloat pathMajorR
 
 - (id)initWithFrame:(CGRect)frame {
     if ((self = [super initWithFrame:frame])) {
-        self.userInteractionEnabled = NO;
-
-        _touchViews = [[NSMapTable alloc] initWithKeyOptions:NSPointerFunctionsStrongMemory
-                                                valueOptions:NSPointerFunctionsStrongMemory
-                                                    capacity:0];
+        [self st_initialize];
     }
     return self;
 }
 
+- (instancetype)initWithCoder:(NSCoder *)coder {
+    if ((self = [super initWithCoder:coder])) {
+        [self st_initialize];
+    }
+    return self;
+}
+
+- (void)st_initialize {
+    self.userInteractionEnabled = NO;
+    _touchViews = [[NSMapTable alloc] initWithKeyOptions:NSPointerFunctionsStrongMemory
+                                            valueOptions:NSPointerFunctionsStrongMemory
+                                                capacity:0];
+}
+
+- (void)didMoveToWindow {
+    [super didMoveToWindow];
+
+    for (UIView *view in _touchViews.objectEnumerator) {
+        [view removeFromSuperview];
+    }
+    [_touchViews removeAllObjects];
+}
+
 - (void)updateWithEvent:(UIEvent *)event {
-    switch (event.type) {
-    case UIEventTypeTouches:
-        break;
-    case UIEventTypeMotion:
-    case UIEventTypeRemoteControl:
-    case UIEventTypePresses:
+    if (event.type != UIEventTypeTouches || !self.window) {
         return;
-    default:
+    }
+
+    NSSet<UITouch *> *const windowTouches = [event touchesForWindow:self.window];
+    if (windowTouches.count == 0) {
         return;
     }
 
     NSMutableSet<UITouch *> *const existingTouches = self.st_knownTouches.mutableCopy;
 
-    for (UITouch *touch in event.allTouches) {
-        if (!touch.window) {
-            continue;
-        }
+    for (UITouch *touch in windowTouches) {
         switch (touch.phase) {
         case UITouchPhaseBegan:
         case UITouchPhaseMoved:
@@ -194,9 +208,6 @@ static CGAffineTransform STTouchViewTransformForRadiiAndTwist(CGFloat pathMajorR
     for (UITouch *touch in existingTouches) {
         [self st_setView:nil forTouch:touch];
     }
-
-    [self setNeedsLayout];
-    [self layoutIfNeeded];
 }
 
 - (NSSet<UITouch *> *)st_knownTouches {
