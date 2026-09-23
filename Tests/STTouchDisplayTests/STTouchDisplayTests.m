@@ -8,6 +8,7 @@
 @property(nonatomic, strong) UIWindow *window;
 @property(nonatomic) UITouchPhase phase;
 @property(nonatomic) CGPoint location;
+@property(nonatomic) CGFloat majorRadius;
 @end
 
 @implementation STFakeTouch
@@ -51,6 +52,7 @@
     ownTouch.window = ownWindow;
     ownTouch.phase = UITouchPhaseBegan;
     ownTouch.location = CGPointMake(40, 50);
+    ownTouch.majorRadius = 10;
 
     STFakeEvent *ownEvent = [[STFakeEvent alloc] init];
     ownEvent.type = UIEventTypeTouches;
@@ -62,6 +64,8 @@
     XCTAssertNotNil(marker.image);
     XCTAssertEqualWithAccuracy(marker.center.x, 40, 0.001);
     XCTAssertEqualWithAccuracy(marker.center.y, 50, 0.001);
+    XCTAssertEqualWithAccuracy(marker.transform.a, 2, 0.001);
+    XCTAssertEqualWithAccuracy(marker.transform.d, 2, 0.001);
 
     STFakeTouch *otherTouch = [[STFakeTouch alloc] init];
     otherTouch.window = otherWindow;
@@ -91,6 +95,7 @@
     touch.window = window;
     touch.phase = UITouchPhaseBegan;
     touch.location = CGPointMake(20, 30);
+    touch.majorRadius = 10;
 
     STFakeEvent *event = [[STFakeEvent alloc] init];
     event.type = UIEventTypeTouches;
@@ -99,14 +104,17 @@
 
     UIImageView *marker = (UIImageView *)display.subviews.firstObject;
     XCTAssertNotNil(marker);
+    XCTAssertEqualWithAccuracy(marker.transform.a, 2, 0.001);
 
     touch.phase = UITouchPhaseMoved;
     touch.location = CGPointMake(70, 80);
+    touch.majorRadius = 0;
     [display updateWithEvent:(UIEvent *)event];
 
     XCTAssertIdentical(display.subviews.firstObject, marker);
     XCTAssertEqualWithAccuracy(marker.center.x, 70, 0.001);
     XCTAssertEqualWithAccuracy(marker.center.y, 80, 0.001);
+    XCTAssertEqualWithAccuracy(marker.transform.a, 1, 0.001);
 
     touch.phase = UITouchPhaseEnded;
     [display updateWithEvent:(UIEvent *)event];

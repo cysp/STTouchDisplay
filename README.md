@@ -49,6 +49,8 @@ self.window = window;
 
 The overlay does not intercept touches and only tracks events from its own window. Markers are a visual aid, not a measurement of finger contact area.
 
+Marker size scales uniformly with UIKit's `UITouch.majorRadius`; a nonpositive radius uses the default size. The display does not represent contact rotation or an exact ellipse.
+
 ## Development
 
 The `STTouchDisplay` scheme in the root project runs the library's unit tests. The demo scheme runs a UI test for button interaction and touch marker lifecycle. [CI](.github/workflows/ci.yml) checks formatting, builds and analyzes both projects, and runs both test targets. `STTouchDisplayImage.m` contains embedded image data and is excluded from the formatting check.
