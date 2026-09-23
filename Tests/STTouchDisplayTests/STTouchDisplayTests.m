@@ -1,4 +1,3 @@
-// Copyright (c) 2026 Scott Talbot.
 // SPDX-License-Identifier: MIT
 
 #import <STTouchDisplay/STTouchDisplay.h>
