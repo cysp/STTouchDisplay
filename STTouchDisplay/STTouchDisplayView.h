@@ -2,7 +2,6 @@
 
 #import <UIKit/UIKit.h>
 
-
 @interface STTouchDisplayView : UIView
-- (void)updateWithEvent:(UIEvent * __nonnull)event;
+- (void)updateWithEvent:(UIEvent *__nonnull)event;
 @end
