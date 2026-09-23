@@ -49,6 +49,8 @@ The overlay does not intercept touches and only tracks events from its own windo
 
 Open `STTouchDisplay.xcodeproj` and run the `STTouchDisplay` scheme's unit tests on an iOS simulator. [CI](.github/workflows/ci.yml) checks formatting, builds the library, runs the unit tests, and performs static analysis. `STTouchDisplayImage.m` contains embedded image data and is excluded from the formatting check.
 
+Run the same checks locally with `./scripts/check-formatting.sh`, `./scripts/build-library.sh`, `./scripts/test-library.sh`, and `./scripts/analyze-library.sh`. The test script uses an iPhone 17 simulator by default; pass an Xcode destination string as its argument to use another device.
+
 ## License
 
 The project is licensed under the [MIT License](LICENSE).

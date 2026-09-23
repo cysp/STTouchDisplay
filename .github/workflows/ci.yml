@@ -1,0 +1,30 @@
+name: CI
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  verify:
+    name: Format, build, test, analyze
+    runs-on: macos-26
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Check Objective-C formatting
+        run: ./scripts/check-formatting.sh
+      - name: Build library
+        run: ./scripts/build-library.sh
+      - name: Run unit tests
+        run: ./scripts/test-library.sh
+      - name: Analyze library
+        run: ./scripts/analyze-library.sh
