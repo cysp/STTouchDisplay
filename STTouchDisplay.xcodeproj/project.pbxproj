@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		2C24425C18E0244A00A926A0 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C24425B18E0244A00A926A0 /* Foundation.framework */; };
 		2C24426118E0244A00A926A0 /* STTouchDisplay.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 2C24426018E0244A00A926A0 /* STTouchDisplay.h */; };
+		A10000000000000000000001 /* STTouchDisplayView.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 2C24428118E0272500A926A0 /* STTouchDisplayView.h */; };
 		2C24428318E0272500A926A0 /* STTouchDisplayView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C24428218E0272500A926A0 /* STTouchDisplayView.m */; };
 		2CEC9E7018E17CBB00E7BE44 /* STTouchDisplayImage.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CEC9E6F18E17CBB00E7BE44 /* STTouchDisplayImage.m */; };
 /* End PBXBuildFile section */
@@ -21,6 +22,7 @@
 			dstSubfolderSpec = 16;
 			files = (
 				2C24426118E0244A00A926A0 /* STTouchDisplay.h in CopyFiles */,
+				A10000000000000000000001 /* STTouchDisplayView.h in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -187,7 +189,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				SDKROOT = iphoneos;
 			};
 			name = Debug;
@@ -228,7 +230,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				SDKROOT = iphoneos;
 				VALIDATE_PRODUCT = YES;
 			};
