@@ -6,6 +6,10 @@ STTouchDisplay draws touch markers over an iOS app. It is an Objective-C static 
 
 Add `STTouchDisplay.xcodeproj` to your app project as a project reference. Make `STTouchDisplay` a target dependency of your app, link `libSTTouchDisplay.a`, and add `$(BUILT_PRODUCTS_DIR)/include` to the app target's Header Search Paths. The library exports `STTouchDisplay.h` and `STTouchDisplayView.h` under `STTouchDisplay/`.
 
+## Demo
+
+Open `STTouchDisplay.xcworkspace` and run the `STTouchDisplayDemo` scheme on an iOS simulator. The demo links the root project's `libSTTouchDisplay.a` product through an Xcode project reference. Tap the button or drag on the screen to see markers without blocking the app's controls.
+
 ## Display touches
 
 Install one display view in each window you want to observe. For an iOS scene, create your window with `initWithWindowScene:`, assign its root view controller, and install the overlay before making the window key and visible. A window subclass can forward touch events:
@@ -47,9 +51,9 @@ The overlay does not intercept touches and only tracks events from its own windo
 
 ## Development
 
-Open `STTouchDisplay.xcodeproj` and run the `STTouchDisplay` scheme's unit tests on an iOS simulator. [CI](.github/workflows/ci.yml) checks formatting, builds the library, runs the unit tests, and performs static analysis. `STTouchDisplayImage.m` contains embedded image data and is excluded from the formatting check.
+The `STTouchDisplay` scheme in the root project runs the library's unit tests. The demo scheme runs a UI test for button interaction and touch marker lifecycle. [CI](.github/workflows/ci.yml) checks formatting, builds and analyzes both projects, and runs both test targets. `STTouchDisplayImage.m` contains embedded image data and is excluded from the formatting check.
 
-Run the same checks locally with `./scripts/check-formatting.sh`, `./scripts/build-library.sh`, `./scripts/test-library.sh`, and `./scripts/analyze-library.sh`. The test script uses an iPhone 17 simulator by default; pass an Xcode destination string as its argument to use another device.
+Run the same checks locally with `./scripts/check-formatting.sh`, `./scripts/build-library.sh`, `./scripts/test-library.sh`, and `./scripts/analyze-library.sh`. For the demo, run `./scripts/build-demo.sh`, `./scripts/test-demo-ui.sh`, and `./scripts/analyze-demo.sh`. Both test scripts use an iPhone 17 simulator by default; pass an Xcode destination string as the argument to use another device.
 
 ## License
 
