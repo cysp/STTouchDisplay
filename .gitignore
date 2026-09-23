@@ -2,3 +2,6 @@
 *.xcodeproj/xcuserdata
 
 .bundle
+DerivedData/
+*.xcresult
+.DS_Store

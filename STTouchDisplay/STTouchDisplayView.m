@@ -1,13 +1,12 @@
-//  Copyright (c) 2014 Scott Talbot. All rights reserved.
+// Copyright (c) 2014 Scott Talbot.
+// SPDX-License-Identifier: MIT
 
 #import "STTouchDisplayView.h"
 #import "STTouchDisplayImage.h"
 
-
 static CGFloat const STTouchPathMajorRadiusDefault = 5;
 static CGFloat const STTouchPathMinorRadiusDefault = 5;
 static CGFloat const STTouchTwistDefault = 90;
-
 
 #if __has_include(<STIOHID/STIOHIDEvent.h>)
 #include <STIOHID/STIOHIDEvent.h>
@@ -25,12 +24,14 @@ static CGFloat const STTouchTwistDefault = 90;
 
 static STIOHIDEventRef STIOHIDEventForUIEvent(UIEvent *event) {
     switch (event.type) {
-        case UIEventTypeTouches:
-            break;
-        case UIEventTypeMotion:
-        case UIEventTypeRemoteControl:
-        case UIEventTypePresses:
-            return NULL;
+    case UIEventTypeTouches:
+        break;
+    case UIEventTypeMotion:
+    case UIEventTypeRemoteControl:
+    case UIEventTypePresses:
+        return NULL;
+    default:
+        return NULL;
     }
 
     if ([event respondsToSelector:@selector(_hidEvent)]) {
@@ -61,7 +62,7 @@ static STIOHIDEventRef STIOHIDDigitizerQualityEventForUIEventAndTouch(UIEvent *e
     CFIndex const nChildren = CFArrayGetCount(children);
     for (CFIndex i = 0; i < nChildren; ++i) {
         STIOHIDEventRef const child = CFArrayGetValueAtIndex(children, i);
-        struct STIOHIDDigitizerQualityEvent const * const cdqe = (struct STIOHIDDigitizerQualityEvent *)child;
+        struct STIOHIDDigitizerQualityEvent const *const cdqe = (struct STIOHIDDigitizerQualityEvent *)child;
         if (cdqe->base.base.base.type != STIOHIDEventTypeDigitizer) {
             continue;
         }
@@ -80,11 +81,10 @@ static STIOHIDEventRef STIOHIDDigitizerQualityEventForUIEventAndTouch(UIEvent *e
     return NULL;
 }
 
-
 static CGFloat const STTouchPathMajorRadius(UIEvent *event, UITouch *touch) {
     STIOHIDEventRef const dqer = STIOHIDDigitizerQualityEventForUIEventAndTouch(event, touch);
     if (dqer) {
-        struct STIOHIDDigitizerQualityEvent const * const dqe = (struct STIOHIDDigitizerQualityEvent *)dqer;
+        struct STIOHIDDigitizerQualityEvent const *const dqe = (struct STIOHIDDigitizerQualityEvent *)dqer;
         return STIOFixedToDouble(dqe->orientation.majorRadius);
     }
     return STTouchPathMajorRadiusDefault;
@@ -93,7 +93,7 @@ static CGFloat const STTouchPathMajorRadius(UIEvent *event, UITouch *touch) {
 static CGFloat const STTouchPathMinorRadius(UIEvent *event, UITouch *touch) {
     STIOHIDEventRef const dqer = STIOHIDDigitizerQualityEventForUIEventAndTouch(event, touch);
     if (dqer) {
-        struct STIOHIDDigitizerQualityEvent const * const dqe = (struct STIOHIDDigitizerQualityEvent *)dqer;
+        struct STIOHIDDigitizerQualityEvent const *const dqe = (struct STIOHIDDigitizerQualityEvent *)dqer;
         return STIOFixedToDouble(dqe->orientation.minorRadius);
     }
     return STTouchPathMinorRadiusDefault;
@@ -102,7 +102,7 @@ static CGFloat const STTouchPathMinorRadius(UIEvent *event, UITouch *touch) {
 static CGFloat const STTouchTwist(UIEvent *event, UITouch *touch) {
     STIOHIDEventRef const dqer = STIOHIDDigitizerQualityEventForUIEventAndTouch(event, touch);
     if (dqer) {
-        struct STIOHIDDigitizerQualityEvent const * const dqe = (struct STIOHIDDigitizerQualityEvent *)dqer;
+        struct STIOHIDDigitizerQualityEvent const *const dqe = (struct STIOHIDDigitizerQualityEvent *)dqer;
         return STIOFixedToDouble(dqe->base.twist);
     }
     return STTouchTwistDefault;
@@ -110,22 +110,16 @@ static CGFloat const STTouchTwist(UIEvent *event, UITouch *touch) {
 
 #else
 
-static CGFloat const STTouchPathMajorRadius(UIEvent *event, UITouch *touch) {
-    return STTouchPathMajorRadiusDefault;
-}
+static CGFloat const STTouchPathMajorRadius(UIEvent *event, UITouch *touch) { return STTouchPathMajorRadiusDefault; }
 
-static CGFloat const STTouchPathMinorRadius(UIEvent *event, UITouch *touch) {
-    return STTouchPathMinorRadiusDefault;
-}
+static CGFloat const STTouchPathMinorRadius(UIEvent *event, UITouch *touch) { return STTouchPathMinorRadiusDefault; }
 
-static CGFloat const STTouchTwist(UIEvent *event, UITouch *touch) {
-    return STTouchTwistDefault;
-}
+static CGFloat const STTouchTwist(UIEvent *event, UITouch *touch) { return STTouchTwistDefault; }
 
 #endif
 
-
-static CGAffineTransform STTouchViewTransformForRadiiAndTwist(CGFloat pathMajorRadius, CGFloat pathMinorRadius, CGFloat twist) {
+static CGAffineTransform STTouchViewTransformForRadiiAndTwist(CGFloat pathMajorRadius, CGFloat pathMinorRadius,
+                                                              CGFloat twist) {
     CGFloat const scaleX = (pathMajorRadius ?: 5) / 5.;
     CGFloat const scaleY = (pathMinorRadius ?: 5) / 5.;
     CGFloat const twistInRadians = M_PI_2 - twist * M_PI / 180.;
@@ -134,52 +128,75 @@ static CGAffineTransform STTouchViewTransformForRadiiAndTwist(CGFloat pathMajorR
     return transform;
 }
 
-
 @implementation STTouchDisplayView {
-@private
+  @private
     NSMapTable<UITouch *, UIView *> *_touchViews;
+    NSMutableSet<UIView *> *_fadingTouchViews;
 }
 
 - (id)initWithFrame:(CGRect)frame {
     if ((self = [super initWithFrame:frame])) {
-        self.userInteractionEnabled = NO;
-
-        _touchViews = [[NSMapTable alloc] initWithKeyOptions:NSPointerFunctionsStrongMemory valueOptions:NSPointerFunctionsStrongMemory capacity:0];
+        [self st_initialize];
     }
     return self;
 }
 
+- (instancetype)initWithCoder:(NSCoder *)coder {
+    if ((self = [super initWithCoder:coder])) {
+        [self st_initialize];
+    }
+    return self;
+}
+
+- (void)st_initialize {
+    self.userInteractionEnabled = NO;
+    _touchViews = [[NSMapTable alloc] initWithKeyOptions:NSPointerFunctionsStrongMemory
+                                            valueOptions:NSPointerFunctionsStrongMemory
+                                                capacity:0];
+    _fadingTouchViews = [[NSMutableSet alloc] init];
+}
+
+- (void)didMoveToWindow {
+    [super didMoveToWindow];
+
+    for (UIView *view in _touchViews.objectEnumerator) {
+        [view removeFromSuperview];
+    }
+    for (UIView *view in _fadingTouchViews) {
+        [view removeFromSuperview];
+    }
+    [_touchViews removeAllObjects];
+    [_fadingTouchViews removeAllObjects];
+}
+
 - (void)updateWithEvent:(UIEvent *)event {
-    switch (event.type) {
-        case UIEventTypeTouches:
-            break;
-        case UIEventTypeMotion:
-        case UIEventTypeRemoteControl:
-        case UIEventTypePresses:
-            return;
+    if (event.type != UIEventTypeTouches || !self.window) {
+        return;
     }
 
-    NSMutableSet<UITouch *> * const existingTouches = self.st_knownTouches.mutableCopy;
+    NSSet<UITouch *> *const windowTouches = [event touchesForWindow:self.window];
+    if (windowTouches.count == 0) {
+        return;
+    }
 
-    for (UITouch *touch in event.allTouches) {
-        if (!touch.window) {
-            continue;
-        }
+    NSMutableSet<UITouch *> *const existingTouches = self.st_knownTouches.mutableCopy;
+
+    for (UITouch *touch in windowTouches) {
         switch (touch.phase) {
-            case UITouchPhaseBegan:
-            case UITouchPhaseMoved:
-            case UITouchPhaseStationary:
-                break;
-            case UITouchPhaseCancelled:
-            case UITouchPhaseEnded:
-            default:
-                continue;
+        case UITouchPhaseBegan:
+        case UITouchPhaseMoved:
+        case UITouchPhaseStationary:
+            break;
+        case UITouchPhaseCancelled:
+        case UITouchPhaseEnded:
+        default:
+            continue;
         }
         UIView *touchView = [self st_viewForTouch:touch];
         if (touchView) {
             [existingTouches removeObject:touch];
         } else {
-            UIImageView * const view = [[UIImageView alloc] initWithFrame:(CGRect){ .size = { .width = 38, .height = 38 } }];
+            UIImageView *const view = [[UIImageView alloc] initWithFrame:(CGRect){.size = {.width = 38, .height = 38}}];
             view.image = STTouchDisplayImage;
             [self st_setView:view forTouch:touch];
             touchView = view;
@@ -190,21 +207,19 @@ static CGAffineTransform STTouchViewTransformForRadiiAndTwist(CGFloat pathMajorR
         CGFloat const touchPathMajorRadius = STTouchPathMajorRadius(event, touch);
         CGFloat const touchPathMinorRadius = STTouchPathMinorRadius(event, touch);
         CGFloat const touchTwist = STTouchTwist(event, touch);
-        CGAffineTransform const touchViewTransform = STTouchViewTransformForRadiiAndTwist(touchPathMajorRadius, touchPathMinorRadius, touchTwist);
+        CGAffineTransform const touchViewTransform =
+            STTouchViewTransformForRadiiAndTwist(touchPathMajorRadius, touchPathMinorRadius, touchTwist);
         touchView.transform = touchViewTransform;
     }
 
     for (UITouch *touch in existingTouches) {
         [self st_setView:nil forTouch:touch];
     }
-
-    [self setNeedsLayout];
-    [self layoutIfNeeded];
 }
 
 - (NSSet<UITouch *> *)st_knownTouches {
-    NSMutableSet * const knownTouches = [[NSMutableSet alloc] init];
-    NSMapTable<UITouch *, UIView *> * const touchViews = _touchViews;
+    NSMutableSet *const knownTouches = [[NSMutableSet alloc] init];
+    NSMapTable<UITouch *, UIView *> *const touchViews = _touchViews;
     for (UITouch *touch in touchViews) {
         [knownTouches addObject:touch];
     }
@@ -212,28 +227,34 @@ static CGAffineTransform STTouchViewTransformForRadiiAndTwist(CGFloat pathMajorR
 }
 
 - (UIView *)st_viewForTouch:(UITouch *)touch {
-    NSMapTable<UITouch *, UIView *> * const touchViews = _touchViews;
-    UIView * const view = [touchViews objectForKey:touch];
+    NSMapTable<UITouch *, UIView *> *const touchViews = _touchViews;
+    UIView *const view = [touchViews objectForKey:touch];
     return view;
 }
 
 - (void)st_setView:(UIView *)view forTouch:(UITouch *)touch {
-    NSMapTable<UITouch *, UIView *> * const touchViews = _touchViews;
+    NSMapTable<UITouch *, UIView *> *const touchViews = _touchViews;
 
     if (view) {
         view.center = [touch locationInView:self];
         [touchViews setObject:view forKey:touch];
         [self addSubview:view];
     } else {
-        UIView * const existingView = [touchViews objectForKey:touch];
+        UIView *const existingView = [touchViews objectForKey:touch];
         CGAffineTransform const existingTransform = existingView.transform;
         [touchViews removeObjectForKey:touch];
-        [UIView animateWithDuration:.25 delay:0 options:UIViewAnimationOptionAllowUserInteraction|UIViewAnimationOptionCurveEaseIn animations:^{
-            existingView.alpha = 0;
-            existingView.transform = CGAffineTransformScale(existingTransform, 2, 2);
-        } completion:^(BOOL finished) {
-            [existingView removeFromSuperview];
-        }];
+        [_fadingTouchViews addObject:existingView];
+        [UIView animateWithDuration:.25
+            delay:0
+            options:UIViewAnimationOptionAllowUserInteraction | UIViewAnimationOptionCurveEaseIn
+            animations:^{
+              existingView.alpha = 0;
+              existingView.transform = CGAffineTransformScale(existingTransform, 2, 2);
+            }
+            completion:^(BOOL finished) {
+              [existingView removeFromSuperview];
+              [self->_fadingTouchViews removeObject:existingView];
+            }];
     }
 }
 
