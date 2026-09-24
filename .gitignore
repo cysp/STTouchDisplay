@@ -1,5 +1,6 @@
 *.xcodeproj/*.xcworkspace
 *.xcodeproj/xcuserdata
+*.xcworkspace/xcuserdata
 
 .bundle
 DerivedData/

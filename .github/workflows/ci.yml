@@ -26,5 +26,11 @@ jobs:
         run: ./scripts/build-library.sh
       - name: Run unit tests
         run: ./scripts/test-library.sh
+      - name: Build demo
+        run: ./scripts/build-demo.sh
+      - name: Run demo UI test
+        run: ./scripts/test-demo-ui.sh
       - name: Analyze library
         run: ./scripts/analyze-library.sh
+      - name: Analyze demo
+        run: ./scripts/analyze-demo.sh
